@@ -9,7 +9,7 @@ class ElasticSearch {
             requestTimeout: 30000
         }, function (error) {
             if (error) {
-                return res.json({ status: false, msg: "ElasticSearch cluster is down" })
+                console.log("ElasticSearch cluster is down");
             }
             else {
                 console.log("sucessfuly elasticSearch connected");
