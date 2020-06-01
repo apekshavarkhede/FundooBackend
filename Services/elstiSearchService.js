@@ -2,14 +2,15 @@ var elasticSearch = require('elasticsearch')
 const esClient = new elasticSearch.Client({
     host: 'localhost:9200',
 })
+var payload = require('../Services/elasticSearchSettings')
 
-class ElasticSearch {
+class ElastiSearch {
     ping() {
         esClient.ping({
             requestTimeout: 30000
         }, function (error) {
             if (error) {
-                console.log("ElasticSearch cluster is down");
+                return res.json({ status: false, msg: "ElasticSearch cluster is down" })
             }
             else {
                 console.log("sucessfuly elasticSearch connected");
@@ -17,31 +18,37 @@ class ElasticSearch {
         })
     }
 
-    // create Index
-    async initIndex(indexName) {
-        let resultOfCreatingIndex = await esClient.indices.create({
-            index: indexName
-        })
-        if (resultOfCreatingIndex.acknowledged === true) {
-            return ({ sucess: true, message: "index sucessfully created", data: resultOfCreatingIndex })
+    async indexExists(data) {
+        let resultOfFindingIndex = await esClient.indices.exists({ index: 'note' })
+        if (resultOfFindingIndex === true) {
+            let m = await this.addDocument(data)
         }
-        if (resultOfCreatingIndex.acknowledged === true) {
-            return ({ sucess: false, message: "Error while creating index", data: resultOfCreatingIndex })
+        if (resultOfFindingIndex === false) {
+            let resultOfCreatingIndex = await esClient.indices.create(payload)
+            if (resultOfCreatingIndex.acknowledged === true) {
+                let x = await this.addDocument(data)
+            }
         }
     }
 
-    //check if index exists
-    async  indexExists(indexName) {
-        let resultOfFindingIndex = await esClient.indices.exists({ index: indexName })
-        if (resultOfFindingIndex === true) {
-            return ({ sucess: true, message: "index found", data: resultOfFindingIndex })
-        }
-        if (resultOfFindingIndex === false) {
-            return ({ sucess: false, message: "index not found" })
-        }
+    addDocument(data) {
+        esClient.index({
+            index: 'note',
+            type: '_doc',
+            body: {
+                doc: {
+                    title: data.title,
+                    discription: data.discription,
+                    label: data.label
+                }
+            }
+        }).then(function (resp) {
+            console.log("resp==", resp);
+        }, function (err) {
+            console.log("err", err);
+        })
     }
 
 }
 
-var elasticSearchClass = new ElasticSearch()
-module.exports = elasticSearchClass
+module.exports = new ElastiSearch()

@@ -5,6 +5,7 @@ var mail = require('../sendEmail')
 var redis = require('redis')
 var client = redis.createClient()
 var mongoosastic = require('mongoosastic')
+var els = require('../Services/elstiSearchService')
 
 const userSchema = new mongoose.Schema({
     firstName: { type: String, required: [true, 'firstName required'], length: { min: 3, max: 10 } },
@@ -17,52 +18,7 @@ const userSchema = new mongoose.Schema({
         timestamps: true
     });
 
-// userSchema.plugin(mongoosastic, {
-//     "host": "localhost",
-//     "port": 9200
-// })
-
-// function hashpassword(password) {
-//     return bcrypt.hashSync(password, 10)
-// }
-
-
-var user = mongoose.model('user', userSchema)
-
-
-
-// user.createMapping(function (err, mapping) {
-//     if (err) {
-//         console.log("err", err);
-//     }
-//     else {
-//         console.log("mapping created", mapping);
-
-//     }
-// })
-
-// let stream = user.synchronize()
-// count = 0;
-// console.log("x====", stream);
-
-// stream.on('data', function () {
-//     count++;
-// })
-
-// stream.on('close', function () {
-//     console.log('[ElasticSearch] Indexed ' + count + ' ', ' documents!');
-// });
-// stream.on('error', function (err) {
-//     console.log('mongoosastic ERROR');
-//     console.log(err);
-// });
-// user.search()
-
-// stream.on('data', function () {
-
-// })
-
-
+var user = mongoose.model('user', userSchema, 'user')
 
 class UserModel {
 
