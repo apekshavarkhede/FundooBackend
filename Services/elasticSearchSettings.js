@@ -9,6 +9,9 @@ var payload = {
                 "discription": {
                     "type": "text"
                 },
+                "remainder":{
+                    "type":"text"
+                },
                 "label": {
                     "type": "nested",
                     "properties": {

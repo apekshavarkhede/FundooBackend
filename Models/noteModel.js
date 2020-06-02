@@ -70,7 +70,8 @@ class NoteModel {
   }
 
   async findAndUpdate(data) {
-    let result = await note.findOneAndUpdate(data._id, data.value, { upsert: true })
+    let result = await note.findByIdAndUpdate(data._id._id, data.value, { new: true })
+    elasticSearch.updateDocument(result)
     return result;
   }
 
@@ -82,9 +83,9 @@ class NoteModel {
   async createNote(data) {
     var noteData = new note(data);
     let resultOfSavingNote = await noteData.save();
-    console.log("1111", resultOfSavingNote);
     if (resultOfSavingNote != null) {
-      await elasticSearch.addDocument(data)
+      elasticSearch.indexExists(resultOfSavingNote)
+      return resultOfSavingNote
     }
     return resultOfSavingNote;
   }
