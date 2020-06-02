@@ -21,13 +21,8 @@ class ElastiSearch {
     }
 
     async indexExists(data) {
-        console.log("hiii", data);
-
         let resultOfFindingIndex = await esClient.indices.exists({ index: 'note' })
-        console.log("resultOfFindingIndex", resultOfFindingIndex);
-
         if (resultOfFindingIndex === true) {
-            console.log("index created sucessfully");
             this.addDocument('note', '_doc', data)
         }
         if (resultOfFindingIndex === false) {
@@ -40,20 +35,15 @@ class ElastiSearch {
     }
 
     addDocument(indexName, type, data) {
-        console.log("data.iddddd", data._id);
-
         esClient.index({
             index: indexName,
             type: type,
-            // id: data._id,
             body: {
-                // doc: {
                 title: data.title,
                 discription: data.discription,
                 id: data._id,
                 label: data.label,
                 remainder: data.remainder
-                // }
             }
         }).then(function (resp) {
             console.log("resp==", resp);
@@ -62,7 +52,7 @@ class ElastiSearch {
         })
     }
 
-    async  updateDocument(data) {
+    async searchDocumentByTitle(data) {
         let searchDocument = await esClient.search({
             index: 'note',
             type: '_doc',
@@ -74,7 +64,12 @@ class ElastiSearch {
                 }
             }
         })
-        let indexId = searchDocument.hits.hits[0]._id;
+        return searchDocument
+    }
+
+    async  updateDocument(data) {
+        let document = await this.searchDocumentByTitle(data)
+        let indexId = document.hits.hits[0]._id;
         return new Promise((resolve, reject) => {
             esClient.update({
                 index: 'note',
