@@ -76,7 +76,8 @@ class NoteModel {
   }
 
   async findAndDelete(data) {
-    let result = await note.findOneAndDelete(data._id);
+    let result = await note.findByIdAndDelete(data);
+    elasticSearch.deleteDocument(result)
     return result;
   }
 

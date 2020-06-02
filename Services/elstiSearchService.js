@@ -92,6 +92,22 @@ class ElastiSearch {
         })
     }
 
+    async deleteDocument(data) {
+        let document = await this.searchDocumentByTitle(data)
+        let indexId = document.hits.hits[0]._id;
+        return new Promise((resolve, reject) => {
+            esClient.delete({
+                index: 'note',
+                type: '_doc',
+                id: indexId,
+            }).then((response) => {
+                resolve({ sucess: true, messag: "Document deleted" })
+            }).catch((error) => {
+                reject({ sucess: false, messag: 'Err while deleting documnet' })
+            })
+        })
+    }
+
 }
 
 module.exports = new ElastiSearch()
