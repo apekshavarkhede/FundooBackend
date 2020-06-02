@@ -87,7 +87,7 @@ exports.deleteNoteController = async (req, res) => {
   try {
     let noteData = {
       userId: req.decoded,
-      noteId: req.body.noteId
+      noteId: req.body._id
     };
     console.log("in delet ctrl", noteData.noteId);
 

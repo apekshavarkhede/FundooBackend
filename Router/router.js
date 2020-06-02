@@ -65,8 +65,4 @@ router.post('/removeLableFromNote/:labelId', redisAuth.redisAuthentication, note
 
 router.get('/getAllRemainder', redisAuth.redisAuthentication, redisControl.resiCache, noteController.getAllRemainderController)
 
-router.post('/createIndex', elasticSearch.createIndex)
-
-router.post('/checkIndexIsPresent/:indexName', elasticSearch.checkIndexPersentControl)
-
 module.exports = router;
