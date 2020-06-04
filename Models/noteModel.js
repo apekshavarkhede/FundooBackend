@@ -58,20 +58,29 @@ const note = mongoose.model("note", noteSchema);
 
 class NoteModel {
   async findOne(data) {
-    console.log("data", data);
-    let result = await note.findOne(data).populate('labels')
-    console.log("result in findOne models", result);
+    let result = await note.findOne(data).populate('label')
+    console.log("result====", result);
+
     return result;
   }
 
   async find(data) {
-    let result = await note.find(data).populate('label')
+    let result = await note.find(data)
     return result;
   }
 
   async findAndUpdate(data) {
     let result = await note.findByIdAndUpdate(data._id._id, data.value, { new: true })
+    let populateResult = await this.findOne(data._id)
+    // if (data.value.$push) {
+    //   let labelData = {
+    //     label: populateResult.label[0].labelName
+    //   }
+    //   elasticSearch.addLableToNote(result, labelData)
+    // }
+    // else {
     elasticSearch.updateDocument(result)
+    // }
     return result;
   }
 
@@ -92,7 +101,7 @@ class NoteModel {
   }
 
   async get(data) {
-    let result = await this.find(data);
+    let result = await this.find(data)
     client.set(data.userId + "notes", JSON.stringify(result));
     return result;
   }
@@ -100,6 +109,14 @@ class NoteModel {
   async getAll(keyData, data) {
     client.set(keyData, JSON.stringify(data));
     return data;
+  }
+
+
+  async search(data) {
+    let resultOfFindingNote = await note.find(
+      { 'title': { $regex: data.searchData, $options: 'i' } }
+    )
+    return resultOfFindingNote
   }
 }
 

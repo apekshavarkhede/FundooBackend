@@ -6,8 +6,11 @@ var elasticSearch = require('elasticsearch')
 
 class NoteServices {
   async createNoteService(data) {
+    // console.log("data in services", data);s
+
     let dataToFind = { title: data.title };
     let result = await noteModel.findOne(dataToFind);
+
     let Note = {
       userId: data.userId
     };
@@ -39,8 +42,8 @@ class NoteServices {
       userId: data.userData.userId
     };
     let resultOfUpdating = await noteModel.findAndUpdate(dataToUpadate);
-    console.log("resultOf updating in services",resultOfUpdating);
-    
+    console.log("resultOf updating in services", resultOfUpdating);
+
     if (resultOfUpdating != null) {
       await noteModel.get(dataOfUser);
       return {
@@ -74,7 +77,7 @@ class NoteServices {
     let result = await noteModel.get(data);
     // console.log("result in grtALl Note services", result);
     if (result != null) {
-      console.log("result in get all", typeof result);
+      // console.log("result in get all", typeof result);
 
       return ({ success: true, data: result });
     }
@@ -109,11 +112,10 @@ class NoteServices {
     let dataOfUser = {
       userId: data.userData.userId
     };
-    console.log("data in services" , dataToUpadate.value);
 
     let result = await noteModel.findAndUpdate(dataToUpadate);
-    console.log("result in rema services",result);
-    
+    console.log("result in rema services", result);
+
     if (result) {
       await noteModel.get(dataOfUser);
       return ({ success: true, message: "sucessfully updated", data: data });
@@ -130,7 +132,6 @@ class NoteServices {
       userId: data.userData.userId
     };
     let result = await noteModel.findAndUpdate(dataToUpadate);
-    console.log("resul in serci", result);
 
     if (result) {
       await noteModel.getAll(dataOfUser);
@@ -243,25 +244,16 @@ class NoteServices {
   }
 
   async addLabelToNoteServices(data) {
-    console.log("data in service", data.userData.noteId);
-
     let dataToUpadate = {
       _id: { _id: data.userData.noteId },
       value: { $push: data.updateData }
     };
-    console.log("ppppp", dataToUpadate._id);
-
-    // let r = await noteModel.findOne(dataToUpadate._id)
-    // console.log("rrrr", r);
 
     let result = await noteModel.findAndUpdate(dataToUpadate);
-    console.log("resultPf finding", result);
-
-    if (result.nModified === 1) {
-      client.set(data.userId + "notes", JSON.stringify(result));
+    if (result.length !== 0) {
       return { success: true, message: "update sucessfully", data: result };
     }
-    if (result.nModified === 0) {
+    if (result.length === 0) {
       return { success: false, message: "Err while updating data" };
     }
   }
@@ -295,8 +287,6 @@ class NoteServices {
   }
 
   async addCollabratorServices(data) {
-    console.log("in services", data.userData.noteId);
-
     let dataToUpadate = {
       _id: { _id: data.userData.noteId },
       value: data.updateData
@@ -306,6 +296,19 @@ class NoteServices {
       return ({ success: true, message: "sucessfully updated", })
     }
   }
+
+  async searchService(data) {
+    let result = await noteModel.search(data)
+    if (result.length > 0) {
+      return ({ success: true, message: "Note search", data: result })
+    }
+    if (result.length === 0) {
+      return ({ success: false, message: "No Note Found" })
+    }
+  }
+
+
 }
+
 
 module.exports = new NoteServices();

@@ -6,7 +6,6 @@ var auth = require('../authentication/authentication')
 var redisAuth = require('../authentication/redisAuthentication')
 var labelController = require('../Controller/labelController')
 var redisControl = require('../Controller/cacheController')
-var elasticSearch = require('../Controller/searchController')
 console.log("in routes");
 
 router.post('/register', userController.registerControl)
@@ -64,5 +63,7 @@ router.post('/addLableToNote', redisAuth.redisAuthentication, noteController.add
 router.post('/removeLableFromNote/:labelId', redisAuth.redisAuthentication, noteController.removeLabelFromNoteController)
 
 router.get('/getAllRemainder', redisAuth.redisAuthentication, redisControl.resiCache, noteController.getAllRemainderController)
+
+router.get('/search',redisAuth.redisAuthentication,noteController.searchController)
 
 module.exports = router;

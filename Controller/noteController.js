@@ -425,6 +425,10 @@ exports.addLableToNoteController = async (req, res) => {
         label: req.body.label
       }
     };
+
+    console.log("data=====???", data);
+
+
     await noteServices
       .addLabelToNoteServices(data)
       .then(response => {
@@ -521,11 +525,22 @@ exports.removeCollabrator = async (req, res) => {
   await noteServices
     .addCollabratorServices(data)
     .then(response => {
-      console.log("in romove collab", response);
-
       res.send(response);
     })
     .catch(err => {
       res.send(err);
     })
 }
+
+
+exports.searchController = async (req, res) => {
+  let data = {
+    userId: req.decoded,
+    searchData: req.body.search
+  }
+  await noteServices.searchService(data).then(response => {
+    res.send(response)
+  }).catch(err => {
+    res.send(err)
+  })
+} 
